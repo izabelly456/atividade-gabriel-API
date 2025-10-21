@@ -4,7 +4,7 @@ import funcao
 # rodar o fastapi:
 # python -m uvicorn api:app --reload
 
-app = FastAPI(title="Gerenciador de Produtos")
+app = FastAPI(title="Gerenciador produtos💲🛒")
 
 @app.get("/")
 def home():
