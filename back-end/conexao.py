@@ -14,11 +14,10 @@ params = {
 
 def conectar():
     try:
-        conexao = psycopg2.connect(**params) 
-        print("Deu certo!")
+        conexao = psycopg2.connect(**params)
+        cursor = conexao.cursor()
+        print("Conexão com banco OK")
         return conexao, cursor
     except Exception as erro:
-        print(f"Erro de conexão {erro}")
+        print(f"Erro de conexão: {erro}")
         return None, None
-    
-conectar()
