@@ -7,10 +7,10 @@ def criar_tabela():
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS produtos (
                     id SERIAL PRIMARY KEY,
-                    nome VARCHAR(100) NOT NULL,
-                    categoria VARCHAR(50),
-                    preco DECIMAL(10,2),
-                    quantidade INT
+                    nome TEXT NOT NULL,
+                    categoria TEXT NOT NULL,
+                    preco REAL NOT NULL,
+                    quantidade INTEGER NOT NULL
                 )
             """)
             conexao.commit()
@@ -20,82 +20,81 @@ def criar_tabela():
             cursor.close()
             conexao.close()
 
+criar_tabela()
 
 def inserir_produto(nome, categoria, preco, quantidade):
     conexao, cursor = conectar()
     if conexao:
         try:
-            cursor.execute("""
-                INSERT INTO produtos (nome, categoria, preco, quantidade)
-                VALUES (%s, %s, %s, %s)
-            """, (nome, categoria, preco, quantidade))
+            cursor.execute(
+                "INSERT INTO produtos (nome, categoria, preco, quantidade) VALUES (%s, %s, %s, %s)",
+                (nome, categoria, preco, quantidade)
+            )
             conexao.commit()
         except Exception as erro:
-            raise Exception(f"Erro ao adicionar produto: {erro}")
+            print(f"Erro ao inserir produto: {erro}")
         finally:
             cursor.close()
             conexao.close()
 
-
-def listar_produtos():
+def listar_produto():
     conexao, cursor = conectar()
     if conexao:
         try:
-            cursor.execute("SELECT * FROM produtos")
+            cursor.execute("SELECT * FROM produtos ORDER BY id")
             return cursor.fetchall()
         except Exception as erro:
-            raise Exception(f"Erro ao listar produtos: {erro}")
+            print(f"Erro ao listar produtos: {erro}")
         finally:
             cursor.close()
             conexao.close()
 
-def atualizar_produto(id, preco=None, quantidade=None):
+def buscar_produto(id_produto):
     conexao, cursor = conectar()
     if conexao:
         try:
-            linhas_afetadas = 0
-            if preco is not None:
-                cursor.execute("UPDATE produtos SET preco = %s WHERE id = %s", (preco, id))
-                linhas_afetadas += cursor.rowcount
-            if quantidade is not None:
-                cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (quantidade, id))
-                linhas_afetadas += cursor.rowcount
-            conexao.commit()
-            return linhas_afetadas > 0
+            cursor.execute("SELECT * FROM produtos WHERE id = %s", (id_produto,))
+            return cursor.fetchone()
         except Exception as erro:
-            raise Exception(f"Erro ao atualizar produto: {erro}")
+            print(f"Erro ao buscar produto: {erro}")
         finally:
             cursor.close()
             conexao.close()
 
-
-def excluir_produto(id):
+def atualizar_preco(id_produto, novo_preco):
     conexao, cursor = conectar()
     if conexao:
         try:
-            cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
+            cursor.execute("UPDATE produtos SET preco = %s WHERE id = %s", (novo_preco, id_produto))
+            conexao.commit()
+        except Exception as erro:
+            print(f"Erro ao atualizar preço: {erro}")
+        finally:
+            cursor.close()
+            conexao.close()
+
+def atualizar_quantidade(id_produto, nova_quantidade):
+    conexao, cursor = conectar()
+    if conexao:
+        try:
+            cursor.execute("UPDATE produtos SET quantidade = %s WHERE id = %s", (nova_quantidade, id_produto))
+            conexao.commit()
+        except Exception as erro:
+            print(f"Erro ao atualizar quantidade: {erro}")
+        finally:
+            cursor.close()
+            conexao.close()
+
+def deletar_produto(id_produto):
+    conexao, cursor = conectar()
+    if conexao:
+        try:
+            cursor.execute("DELETE FROM produtos WHERE id = %s", (id_produto,))
             conexao.commit()
             return cursor.rowcount > 0
         except Exception as erro:
-            raise Exception(f"Erro ao excluir produto: {erro}")
+            print(f"Erro ao deletar produto: {erro}")
+            return False
         finally:
             cursor.close()
             conexao.close()
-
-
-def valor_total_estoque():
-    conexao, cursor = conectar()
-    if conexao:
-        try:
-            cursor.execute("SELECT SUM(preco * quantidade) AS total FROM produtos")
-            resultado = cursor.fetchone()
-            return float(resultado["total"] or 0)
-        except Exception as erro:
-            raise Exception(f"Erro ao calcular valor total em estoque: {erro}")
-        finally:
-            cursor.close()
-            conexao.close()
-
-criar_tabela()
-
-
