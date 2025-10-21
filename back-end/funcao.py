@@ -83,3 +83,19 @@ def excluir_produto(id):
             conexao.close()
 
 
+def valor_total_estoque():
+    conexao, cursor = conectar()
+    if conexao:
+        try:
+            cursor.execute("SELECT SUM(preco * quantidade) AS total FROM produtos")
+            resultado = cursor.fetchone()
+            return float(resultado["total"] or 0)
+        except Exception as erro:
+            raise Exception(f"Erro ao calcular valor total em estoque: {erro}")
+        finally:
+            cursor.close()
+            conexao.close()
+
+criar_tabela()
+
+
