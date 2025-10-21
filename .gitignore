@@ -1,15 +1,5 @@
-
 .venv/
-env/
-venv/
-
-# Python
 __pycache__/
 *.pyc
-*.pyo
-
-# Configurações do editor
 .vscode/
-
-# Arquivo de variáveis sensíveis
 .env
