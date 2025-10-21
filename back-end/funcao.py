@@ -35,3 +35,18 @@ def inserir_produto(nome, categoria, preco, quantidade):
         finally:
             cursor.close()
             conexao.close()
+
+
+def listar_produtos():
+    conexao, cursor = conectar()
+    if conexao:
+        try:
+            cursor.execute("SELECT * FROM produtos")
+            return cursor.fetchall()
+        except Exception as erro:
+            raise Exception(f"Erro ao listar produtos: {erro}")
+        finally:
+            cursor.close()
+            conexao.close()
+            
+
